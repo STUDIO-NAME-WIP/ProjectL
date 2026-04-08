@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider))]
 public class CollisionHandler : MonoBehaviour
 {
     public Action<Collision> OnCollisionEnterHandler;

@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider))]
 public class TriggerHandler : MonoBehaviour
 {
     public Action<Collider> OnTriggerEnterHandler;

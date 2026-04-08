@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
         input.Player.Move.canceled += OnMove;
         input.Player.Interact.performed += OnInteract;
         triggerHandler.OnTriggerEnterHandler += HandleTriggerEnter;
-        triggerHandler.OnTriggerExitHandler += HandleTriggerxit;
+        triggerHandler.OnTriggerExitHandler += HandleTriggerExit;
     }
     
     private void OnMove(InputAction.CallbackContext ctx)
@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
         input.Player.Move.canceled -= OnMove;
         input.Player.Interact.performed -= OnInteract;
         triggerHandler.OnTriggerEnterHandler -= HandleTriggerEnter;
-        triggerHandler.OnTriggerExitHandler -= HandleTriggerxit;
+        triggerHandler.OnTriggerExitHandler -= HandleTriggerExit;
     }
 
     private void HandleTriggerEnter(Collider other)
@@ -57,7 +57,7 @@ public class PlayerController : MonoBehaviour
         interactor.TryAddInteractable(other);
     }
 
-    private void HandleTriggerxit(Collider other)
+    private void HandleTriggerExit(Collider other)
     {
         interactor.TryRemoveInteractable(other);
     }

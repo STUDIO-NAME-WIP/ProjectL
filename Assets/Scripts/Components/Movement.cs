@@ -46,7 +46,7 @@ public class Movement : MonoBehaviour
 
     private void Move(float deltaTime, bool moveWithPhysics)
     {
-        Vector3 movement = movementDirection * movementSpeed * deltaTime;
+        Vector3 movement = movementSpeed * deltaTime * movementDirection;
         if (moveWithPhysics)
             rigidbody.MovePosition(rigidbody.position + movement);
         else
@@ -55,7 +55,7 @@ public class Movement : MonoBehaviour
 
     private bool IsPhysicallyMovable()
     {
-        if (rigidbody == null)
+        if (!rigidbody)
             return false;
 
         return !rigidbody.isKinematic;
@@ -85,9 +85,6 @@ public class Movement : MonoBehaviour
         if (lookDirection.sqrMagnitude > 0.001f)
             return lookDirection.normalized;
         
-        if (movementDirection.sqrMagnitude > 0.001f)
-            return movementDirection.normalized;
-        
-        return Vector3.zero;
+        return movementDirection.sqrMagnitude > 0.001f ? movementDirection.normalized : Vector3.zero;
     }
 }
