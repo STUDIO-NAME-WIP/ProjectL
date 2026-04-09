@@ -6,12 +6,11 @@ public class Interactor : MonoBehaviour
 {
     [SerializeField] private bool allowInteractionDuringPickup;
     
-    private List<GameObject> interactables = new List<GameObject>();
+    private List<IInteractable> interactables = new List<IInteractable>();
 
     public void TryAddInteractable(Collider go)
     {
-        //TODO Change to IInteractable once we have it
-        if (!go.TryGetComponent<GameObject>(out var interactable))
+        if (!go.TryGetComponent<IInteractable>(out var interactable))
             return;
         
         if (interactables.Contains(interactable))
@@ -21,8 +20,7 @@ public class Interactor : MonoBehaviour
     
     public void TryRemoveInteractable(Collider go)
     {
-        //TODO Change to IInteractable once we have it
-        if (!go.TryGetComponent<GameObject>(out var interactable))
+        if (!go.TryGetComponent<IInteractable>(out var interactable))
             return;
         
         if (!interactables.Contains(interactable))
@@ -34,7 +32,7 @@ public class Interactor : MonoBehaviour
     {
         if (interactables.Count <= 0)
             return;
-        GameObject interactable = interactables.OrderByDescending(i => i.transform.position.sqrMagnitude).First();
-        //TODO Call the interact method on the IInteractable
+        IInteractable interactable = interactables.OrderBy(i => (i.GetPosition() - transform.position).sqrMagnitude).First();
+        interactable.Interact();
     }
 }
