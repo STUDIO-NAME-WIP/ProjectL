@@ -27,12 +27,20 @@ public class Movement : MonoBehaviour
         SimultateMovement(Time.deltaTime, false);
     }
     
-    private void FixedUpdate()  
+    private void FixedUpdate()
     {
         if (!IsPhysicallyMovable())
             return;
         
-        SimultateMovement(Time.deltaTime, true);
+        SimultateMovement(Time.fixedDeltaTime, true);
+    }
+
+    private bool IsPhysicallyMovable()
+    {
+        if (!rigidbody)
+            return false;
+
+        return !rigidbody.isKinematic;
     }
 
     private void SimultateMovement(float deltaTime, bool moveWithPhysics)
@@ -51,14 +59,6 @@ public class Movement : MonoBehaviour
             rigidbody.MovePosition(rigidbody.position + movement);
         else
             transform.Translate(movement, Space.World);
-    }
-
-    private bool IsPhysicallyMovable()
-    {
-        if (!rigidbody)
-            return false;
-
-        return !rigidbody.isKinematic;
     }
     
     private void Rotate(float deltaTime, bool moveWithPhysics)
