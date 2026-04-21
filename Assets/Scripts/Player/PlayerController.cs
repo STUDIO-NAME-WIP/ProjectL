@@ -6,7 +6,8 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Movement movement;
     [SerializeField] private Interactor interactor;
-    
+    [SerializeField] private PickUpper pickUpper;
+
     [SerializeField] private CollisionHandler collisionHandler;
     [SerializeField] private TriggerHandler triggerHandler;
     
@@ -40,6 +41,7 @@ public class PlayerController : MonoBehaviour
     private void OnInteract(InputAction.CallbackContext ctx)
     {
         interactor.Interact();
+        pickUpper.Grab();
     }
 
     private void OnDisable()
@@ -55,10 +57,12 @@ public class PlayerController : MonoBehaviour
     private void HandleTriggerEnter(Collider other)
     {
         interactor.TryAddInteractable(other);
+        pickUpper.TryAddGrababble(other);
     }
 
     private void HandleTriggerExit(Collider other)
     {
         interactor.TryRemoveInteractable(other);
+        pickUpper.TryRemoveInteractable(other);
     }
 }
