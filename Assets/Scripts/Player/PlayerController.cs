@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
         input.Enable();
         input.Player.Move.performed += OnMove;
         input.Player.Move.canceled += OnMove;
-        input.Player.Interact.performed += OnInteract;
+        input.Player.Interact.started += OnInteract;
         triggerHandler.OnTriggerEnterHandler += HandleTriggerEnter;
         triggerHandler.OnTriggerExitHandler += HandleTriggerExit;
     }
