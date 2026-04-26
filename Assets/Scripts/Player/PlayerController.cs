@@ -5,8 +5,9 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Movement movement;
-    [SerializeField] private Interactor interactor;
-    
+    [SerializeField] private ObjectHandler<IInteractable> interactor;
+    [SerializeField] private ObjectHandler<IGrababble> pickUpper;
+
     [SerializeField] private CollisionHandler collisionHandler;
     [SerializeField] private TriggerHandler triggerHandler;
     
@@ -24,7 +25,7 @@ public class PlayerController : MonoBehaviour
         input.Enable();
         input.Player.Move.performed += OnMove;
         input.Player.Move.canceled += OnMove;
-        input.Player.Interact.performed += OnInteract;
+        input.Player.Interact.started += OnInteract;
         triggerHandler.OnTriggerEnterHandler += HandleTriggerEnter;
         triggerHandler.OnTriggerExitHandler += HandleTriggerExit;
     }
@@ -39,7 +40,34 @@ public class PlayerController : MonoBehaviour
 
     private void OnInteract(InputAction.CallbackContext ctx)
     {
-        interactor.Interact();
+        if (pickUpper.HasPriority)
+        {
+            pickUpper.Act();
+            return;
+        }
+
+        if (!interactor.HasObjectsNearby())
+        {
+            if (!pickUpper.HasObjectsNearby())
+                return;
+
+            pickUpper.Act();
+            return;
+        }
+
+        if (!pickUpper.HasObjectsNearby())
+        {
+            interactor.Act();
+            return;
+        }
+
+        float nearestInteractableDistance = interactor.GetNearestObjectPosition().sqrMagnitude;
+        float nearestGrabbableDistance = pickUpper.GetNearestObjectPosition().sqrMagnitude;
+
+        if (nearestGrabbableDistance < nearestInteractableDistance)
+            pickUpper.Act();
+        else
+            interactor.Act();
     }
 
     private void OnDisable()
@@ -54,11 +82,13 @@ public class PlayerController : MonoBehaviour
 
     private void HandleTriggerEnter(Collider other)
     {
-        interactor.TryAddInteractable(other);
+        interactor.TryAddObject(other);
+        pickUpper.TryAddObject(other);
     }
 
     private void HandleTriggerExit(Collider other)
     {
-        interactor.TryRemoveInteractable(other);
+        interactor.TryRemoveObject(other);
+        pickUpper.TryRemoveObject(other);
     }
 }
