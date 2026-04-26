@@ -5,8 +5,8 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Movement movement;
-    [SerializeField] private Interactor interactor;
-    [SerializeField] private PickUpper pickUpper;
+    [SerializeField] private ObjectHandler<IInteractable> interactor;
+    [SerializeField] private ObjectHandler<IGrababble> pickUpper;
 
     [SerializeField] private CollisionHandler collisionHandler;
     [SerializeField] private TriggerHandler triggerHandler;
@@ -40,8 +40,34 @@ public class PlayerController : MonoBehaviour
 
     private void OnInteract(InputAction.CallbackContext ctx)
     {
-        interactor.Interact();
-        pickUpper.Grab();
+        if (pickUpper.HasPriority)
+        {
+            pickUpper.Act();
+            return;
+        }
+
+        if (!interactor.HasObjectsNearby())
+        {
+            if (!pickUpper.HasObjectsNearby())
+                return;
+
+            pickUpper.Act();
+            return;
+        }
+
+        if (!pickUpper.HasObjectsNearby())
+        {
+            interactor.Act();
+            return;
+        }
+
+        float nearestInteractableDistance = interactor.GetNearestObjectPosition().sqrMagnitude;
+        float nearestGrabbableDistance = pickUpper.GetNearestObjectPosition().sqrMagnitude;
+
+        if (nearestGrabbableDistance < nearestInteractableDistance)
+            pickUpper.Act();
+        else
+            interactor.Act();
     }
 
     private void OnDisable()
@@ -56,13 +82,13 @@ public class PlayerController : MonoBehaviour
 
     private void HandleTriggerEnter(Collider other)
     {
-        interactor.TryAddInteractable(other);
-        pickUpper.TryAddGrababble(other);
+        interactor.TryAddObject(other);
+        pickUpper.TryAddObject(other);
     }
 
     private void HandleTriggerExit(Collider other)
     {
-        interactor.TryRemoveInteractable(other);
-        pickUpper.TryRemoveInteractable(other);
+        interactor.TryRemoveObject(other);
+        pickUpper.TryRemoveObject(other);
     }
 }
