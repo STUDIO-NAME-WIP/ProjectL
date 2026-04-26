@@ -1,38 +1,14 @@
-using JetBrains.Annotations;
-using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
-public class PickUpper : MonoBehaviour
+public class PickUpper : ObjectHandler<IGrababble>
 {
     private bool hasPickup;
     private IGrababble currentPickup;
 
-    private List<IGrababble> interactables = new List<IGrababble>();
+    public override bool HasPriority => hasPickup;
 
-    public void TryAddGrababble(Collider go)
+    public override void Act()
     {
-        if (!go.TryGetComponent<IGrababble>(out var interactable))
-            return;
-
-        if (interactables.Contains(interactable))
-            return;
-        interactables.Add(interactable);
-    }
-
-    public void TryRemoveInteractable(Collider go)
-    {
-        if (!go.TryGetComponent<IGrababble>(out var interactable))
-            return;
-
-        if (!interactables.Contains(interactable))
-            return;
-        interactables.Remove(interactable);
-    }
-
-    public void Grab()
-    {
-        Debug.Log("Grab");
         if (hasPickup)
         {
             currentPickup.Drop();
@@ -40,13 +16,12 @@ public class PickUpper : MonoBehaviour
         }
         else
         {
-            if (interactables.Count <= 0)
+            if (objectsNearby.Count <= 0)
                 return;
-            IGrababble interactable = interactables.OrderBy(i => (i.GetPosition() - transform.position).sqrMagnitude).First();
-            interactable.Grab();
-            currentPickup = interactable;
+            IGrababble grababble = objectsNearby.OrderBy(i => (i.GetPosition() - transform.position).sqrMagnitude).First();
+            grababble.Grab();
+            currentPickup = grababble;
             hasPickup = true;
         }
-
     }
 }

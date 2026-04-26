@@ -1,6 +1,4 @@
-using UnityEngine;
-
-public interface IInteractable {    
+public interface IInteractable : IActuable
+{    
     void Interact();
-    Vector3 GetPosition();
 }
