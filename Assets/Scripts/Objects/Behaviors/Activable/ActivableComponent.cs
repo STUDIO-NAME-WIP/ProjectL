@@ -1,8 +1,11 @@
+using System;
 using UnityEngine;
 
 public class ActivableComponent : MonoBehaviour, IObjectBehavior
 {
+    public Action<ActivationData> Activate;
     private IActivationBehavior activationBehavior;
+
     public void Configure(LevelObjectParameters data)
     {
         switch(data.activationType)
@@ -20,6 +23,7 @@ public class ActivableComponent : MonoBehaviour, IObjectBehavior
     public void CheckActivation(ActivationData data)
     {
         activationBehavior.CheckActivation(data);
+        if (IsActive) Activate?.Invoke(data);
     }
 }
 

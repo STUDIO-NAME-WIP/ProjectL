@@ -4,7 +4,6 @@ public class LightEmmiterComponent : MonoBehaviour, IObjectBehavior
 {
     private ILightEmitterBehavior emitter;
     private int range;
-    private Direction orientation;
 
     public void Configure(LevelObjectParameters data)
     {
@@ -27,9 +26,10 @@ public class LightEmmiterComponent : MonoBehaviour, IObjectBehavior
         }
     }
 
-    public void ApplyIllumination(Tile originTile, GridMap map)
+    public void ApplyIllumination(Tile originTile, GridMap map, Direction orientation)
     {
-        foreach (var pos in emitter.GetIlluminatedTiles(originTile.GridPosition, orientation))
+        var tiles = emitter.GetIlluminatedTiles(originTile.GridPosition, orientation);
+        foreach (var pos in tiles)
         {
             var tile = map.GetTile(pos);
             if (tile != null)
@@ -37,9 +37,10 @@ public class LightEmmiterComponent : MonoBehaviour, IObjectBehavior
         }
     }
 
-    public void RemoveIllumination(Tile originTile, GridMap map)
+    public void RemoveIllumination(Tile originTile, GridMap map, Direction orientation)
     {
-        foreach (var pos in emitter.GetIlluminatedTiles(originTile.GridPosition, orientation))
+        var tiles = emitter.GetIlluminatedTiles(originTile.GridPosition, orientation);
+        foreach (var pos in tiles)
         {
             var tile = map.GetTile(pos);
             if (tile != null)

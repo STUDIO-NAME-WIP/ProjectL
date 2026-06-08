@@ -7,8 +7,6 @@ public class Tile
     public Vector2Int GridPosition { get; private set; }
     public Vector3 WorldPosition { get; private set; }
 
-    public event Action<LevelObject, TileLayer> OnObjectEntered;
-    public event Action<LevelObject, TileLayer> OnObjectExited;
     public event Action<Tile, bool> OnIlluminationChanged;
 
     public bool IsIlluminated => lightEmitters.Count > 0;
@@ -29,7 +27,7 @@ public class Tile
         if (contents.ContainsKey(layer)) return false;
 
         contents[layer] = obj;
-        OnObjectEntered?.Invoke(obj, layer);
+        obj.PlaceOnTile(this);
         return true;
     }
 
@@ -39,7 +37,7 @@ public class Tile
 
         var obj = contents[layer];
         contents.Remove(layer);
-        OnObjectExited?.Invoke(obj, layer);
+        obj.RemoveFromTile(this);
         return true;
     }
 

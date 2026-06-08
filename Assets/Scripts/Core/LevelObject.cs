@@ -16,20 +16,25 @@ public class LevelObject : MonoBehaviour, ITileContent
     public TileLayer Layer { get; protected set; }
     public Direction Orientation { get; protected set; }
 
+    protected Action OnPlaceOnTile;
+    protected Action OnRemoveFromTile;
+
     protected Tile currentTile;
     protected LevelObjectData data;
     protected Dictionary<Type, IObjectBehavior> behaviors = new Dictionary<Type, IObjectBehavior>();
+    protected GridMap map;
 
-    public virtual void Initialize(LevelObjectData objectData)
+    public Tile CurrentTile => currentTile;
+
+    public virtual void Initialize(LevelObjectData objectData, GridMap gridMap)
     {
         data = objectData;
         ObjectId = objectData.objectId;
         GridPosition = objectData.gridPosition;
         Layer = objectData.layer;
-        Orientation = objectData.orientation;
+        map = gridMap;
 
-        transform.rotation = Orientation.ToRotation();
-
+        Rotate(objectData.orientation);
         InitializeBehaviors();
     }
 
@@ -63,6 +68,18 @@ public class LevelObject : MonoBehaviour, ITileContent
         Orientation = newDirection;
         transform.rotation = Orientation.ToRotation();
     }
+
+    public virtual void PlaceOnTile(Tile tile)
+    {
+        currentTile = tile;
+        OnPlaceOnTile?.Invoke();
+    }
+
+    public virtual void RemoveFromTile(Tile tile)
+    {
+        currentTile = null;
+        OnRemoveFromTile?.Invoke();
+    }
 }
 
 public enum Direction
@@ -94,5 +111,15 @@ public static class DirectionExtensions
             Direction.WEST => Quaternion.Euler(0, 270, 0),
             _ => Quaternion.identity,
         };
+    }
+
+    public static Direction RotateClockwise(this Direction dir)
+    {
+        return (Direction)(((int)dir + 1) % 4);
+    }
+
+    public static Direction RotateCounterClockwise(this Direction dir)
+    {
+        return (Direction)(((int)dir + 3) % 4);
     }
 }
