@@ -1,12 +1,17 @@
-using System.Linq;
+using UnityEngine;
 
-public class Interactor : ObjectHandler<IInteractable>
+public class Interactor : ObjectHandler<IInteractableBehavior>
 {
+    [SerializeField] private Transform playerTransform;
+
     public override void Act()
     {
-        if (objectsNearby.Count <= 0)
-            return;
-        IInteractable interactable = objectsNearby.OrderBy(i => (i.GetPosition() - transform.position).sqrMagnitude).First();
-        interactable.Interact();
+        IInteractableBehavior interactable = GetObjectOnFacingTile();
+
+        InteractionData interactionData = InteractionData.Create(
+            playerTransform: playerTransform,
+            playerTile: new Vector2Int(),
+            targetTile: new Vector2Int()
+        );
     }
 }

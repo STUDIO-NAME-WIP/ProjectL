@@ -1,27 +1,65 @@
-using System.Linq;
+using UnityEngine;
 
-public class PickUpper : ObjectHandler<IGrababble>
+public class PickUpper : ObjectHandler<IInteractableBehavior>
 {
-    private bool hasPickup;
-    private IGrababble currentPickup;
+    [SerializeField] private Transform playerTransform;
 
+    private bool hasPickup;
+    private IInteractableBehavior currentPickup;
+    private LevelObject currentPickupObject;
+
+    public bool HasPickup => hasPickup;
     public override bool HasPriority => hasPickup;
+
+    private void OnEnable()
+    {
+
+    }
+
+    private void OnDisable()
+    {
+
+
+        if (hasPickup)
+            DropObject(force: true);
+    }
 
     public override void Act()
     {
         if (hasPickup)
         {
-            currentPickup.Drop();
-            hasPickup = false;
+            DropObject();
         }
         else
         {
-            if (objectsNearby.Count <= 0)
+            // Obtener el objeto en el tile que el jugador está mirando
+            IInteractableBehavior grababble = GetObjectOnFacingTile();
+
+            if (grababble == null)
+            {
+                Debug.LogWarning("[PickUpper] No grabbable object on facing tile");
                 return;
-            IGrababble grababble = objectsNearby.OrderBy(i => (i.GetPosition() - transform.position).sqrMagnitude).First();
-            grababble.Grab();
-            currentPickup = grababble;
-            hasPickup = true;
+            }
+
+            GrabObject(grababble);
         }
+    }
+
+    private void GrabObject(IInteractableBehavior grababble)
+    {
+
+    }
+
+    private void DropObject(bool force = false)
+    {
+        if (currentPickup == null)
+            return;
+
+ 
+    }
+
+    private void OnPlayerTileChanged(Vector2Int oldTile, Vector2Int newTile)
+    {
+        
     }
 }
