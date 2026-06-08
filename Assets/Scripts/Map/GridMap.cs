@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ public class GridMap : MonoBehaviour
     private float tileSize;
 
     private Vector3 origin;
+    private List<LevelObject> objects;
 
     [SerializeField]
     private LevelData levelData;
@@ -25,6 +27,7 @@ public class GridMap : MonoBehaviour
         tileSize = levelData.tileSize;
         origin = levelData.origin;
         tiles = new Tile[width, height];
+        objects = new List<LevelObject>(); 
 
         for (int x = 0; x < width; x++)
         {
@@ -44,10 +47,30 @@ public class GridMap : MonoBehaviour
             var instance = Instantiate(objData.prefab, GridToWorld(objData.gridPosition), objData.orientation.ToRotation());
             instance.name = $"{objData.objectId}";
             var levelObj = instance.GetComponent<LevelObject>();
-            levelObj.Initialize(objData);
-
+            levelObj.Initialize(objData, this);
+            objects.Add(levelObj);
             var tile = GetTile(objData.gridPosition);
-            tile?.TryPlaceObject(objData.layer, levelObj);
+            tile.TryPlaceObject(objData.layer, levelObj);
+        }
+
+        RefreshObjects();
+    }
+
+    private void RefreshObjects()
+    {
+        RecalculateIllumination();
+    }
+
+    private void RecalculateIllumination()
+    {
+        foreach (var obj in objects)
+        {
+            var emitter = obj.GetBehavior<LightEmmiterComponent>();
+            if (emitter != null)
+            {
+                emitter.RemoveIllumination(obj.CurrentTile, this, obj.Orientation);
+                emitter.ApplyIllumination(obj.CurrentTile, this, obj.Orientation);
+            }
         }
     }
 

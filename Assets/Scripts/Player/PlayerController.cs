@@ -1,8 +1,7 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : LevelObject
 {
     [SerializeField] private Movement movement;
     [SerializeField] private Interactor interactor;
@@ -18,8 +17,9 @@ public class PlayerController : MonoBehaviour
         input = new InputSystemActions();
     }
 
-    private void OnEnable()
+    public override void Initialize(LevelObjectData data, GridMap gridMap)
     {
+        base.Initialize(data, gridMap);
         input.Enable();
         input.Player.Move.performed += OnMove;
         input.Player.Move.canceled += OnMove;
@@ -94,10 +94,5 @@ public class PlayerController : MonoBehaviour
             interactor.TryRemoveObject(other);
         if (pickUpper != null)
             pickUpper.TryRemoveObject(other);
-    }
-
-    private void HandlePlayerEnteredTile(Vector2Int newTile)
-    {
-        Debug.Log($"[PlayerController] Entered tile: {newTile}");
     }
 }

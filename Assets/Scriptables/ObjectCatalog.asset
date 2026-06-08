@@ -104,3 +104,21 @@ MonoBehaviour:
       linkedElements: []
       hasStates: 0
       initialState: 0
+  - prefab: {fileID: 7782666762329379884, guid: 1296c33d8d28fc54fb2816e286642136, type: 3}
+    previewSprite: {fileID: 21300000, guid: 4c010e855ab52484e909d89fa4d1949d, type: 3}
+    defaultParameters:
+      movableType: 0
+      movementType: 0
+      colliderLevel: 0
+      width: 1
+      length: 1
+      isEdgeObject: 0
+      interactionType: 0
+      lightShape: 0
+      lightRange: 5
+      lightBlockType: 1
+      activationType: 3
+      isPowered: 1
+      linkedElements: []
+      hasStates: 1
+      initialState: 0
