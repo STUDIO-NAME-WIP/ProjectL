@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,28 +6,64 @@ public class Tile
 {
     public Vector2Int GridPosition { get; private set; }
     public Vector3 WorldPosition { get; private set; }
-    public bool IsLit { get; set; }
 
-    private Dictionary<TileLayer, ITileContent> contents;
+    public event Action<LevelObject, TileLayer> OnObjectEntered;
+    public event Action<LevelObject, TileLayer> OnObjectExited;
+    public event Action<Tile, bool> OnIlluminationChanged;
 
-    public Tile(Vector2Int gridPosition, Vector3 worldPosition)
+    public bool IsIlluminated => lightEmitters.Count > 0;
+
+    private Dictionary<TileLayer, LevelObject> contents;
+    private HashSet<LightEmmiterComponent> lightEmitters;
+
+    public Tile(Vector2Int gridPos, Vector3 worldPos)
     {
-        GridPosition = gridPosition;
-        WorldPosition = worldPosition;
-        contents = new Dictionary<TileLayer, ITileContent>();
+        GridPosition = gridPos;
+        WorldPosition = worldPos;
+        lightEmitters = new HashSet<LightEmmiterComponent>();
+        contents = new Dictionary<TileLayer, LevelObject>();
     }
 
-    public bool TryPlaceContent(TileLayer layer, ITileContent content)
+    public bool TryPlaceObject(TileLayer layer, LevelObject obj)
     {
         if (contents.ContainsKey(layer)) return false;
-        contents[layer] = content;
-        //content.OnPlaced(this); TODO: Check if this is needed
+
+        contents[layer] = obj;
+        OnObjectEntered?.Invoke(obj, layer);
         return true;
     }
 
-    public ITileContent GetContent(TileLayer layer)
+    public bool RemoveObject(TileLayer layer)
     {
-        contents.TryGetValue(layer, out ITileContent content);
-        return content;
+        if (!contents.ContainsKey(layer)) return false;
+
+        var obj = contents[layer];
+        contents.Remove(layer);
+        OnObjectExited?.Invoke(obj, layer);
+        return true;
+    }
+
+    public LevelObject GetObject(TileLayer layer)
+    {
+        contents.TryGetValue(layer, out var obj);
+        return obj;
+    }
+
+    public bool IsEmpty(TileLayer layer) => !contents.ContainsKey(layer) || contents[layer] is null;
+
+    public void AddLightSource(LightEmmiterComponent light)
+    {
+        if (lightEmitters.Add(light) && lightEmitters.Count == 1)
+        {
+            OnIlluminationChanged?.Invoke(this, true);
+        }
+    }
+
+    public void RemoveLightSource(LightEmmiterComponent light)
+    {
+        if (lightEmitters.Remove(light) && lightEmitters.Count == 0)
+        {
+            OnIlluminationChanged?.Invoke(this, false);
+        }
     }
 }

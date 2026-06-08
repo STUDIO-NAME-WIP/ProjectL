@@ -1,31 +1,34 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
-public abstract class ObjectHandler<T> : MonoBehaviour where T : IActuable
+public abstract class ObjectHandler<T> : MonoBehaviour
 {
+    [SerializeField] protected GridMap gridMap;
+
     protected List<T> objectsNearby = new List<T>();
 
     public virtual bool HasPriority => false;
 
-    public void TryAddObject(Collider go)
+    public void TryAddObject(Collider collider)
     {
-        if (!go.TryGetComponent<T>(out var interactable))
+        if (!collider.TryGetComponent<T>(out var obj))
             return;
 
-        if (objectsNearby.Contains(interactable))
+        if (objectsNearby.Contains(obj))
             return;
-        objectsNearby.Add(interactable);
+
+        objectsNearby.Add(obj);
     }
 
-    public void TryRemoveObject(Collider go)
+    public void TryRemoveObject(Collider collider)
     {
-        if (!go.TryGetComponent<T>(out var interactable))
+        if (!collider.TryGetComponent<T>(out var obj))
             return;
 
-        if (!objectsNearby.Contains(interactable))
+        if (!objectsNearby.Contains(obj))
             return;
-        objectsNearby.Remove(interactable);
+
+        objectsNearby.Remove(obj);
     }
 
     public abstract void Act();
@@ -35,8 +38,8 @@ public abstract class ObjectHandler<T> : MonoBehaviour where T : IActuable
         return objectsNearby.Count > 0;
     }
 
-    public Vector2 GetNearestObjectPosition()
+    protected T GetObjectOnFacingTile()
     {
-        return objectsNearby.OrderBy(i => (i.GetPosition() - transform.position).sqrMagnitude).First().GetPosition();
+        return default(T);
     }
 }

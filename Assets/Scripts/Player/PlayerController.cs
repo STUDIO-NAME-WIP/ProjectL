@@ -5,18 +5,16 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Movement movement;
-    [SerializeField] private ObjectHandler<IInteractable> interactor;
-    [SerializeField] private ObjectHandler<IGrababble> pickUpper;
-
+    [SerializeField] private Interactor interactor;
+    [SerializeField] private PickUpper pickUpper;
     [SerializeField] private CollisionHandler collisionHandler;
     [SerializeField] private TriggerHandler triggerHandler;
-    
     private InputSystemActions input;
     private PlayerModel model;
 
     private void Awake()
     {
-        model = new PlayerModel(movement, interactor);
+        model = new PlayerModel(movement, null);
         input = new InputSystemActions();
     }
 
@@ -26,48 +24,12 @@ public class PlayerController : MonoBehaviour
         input.Player.Move.performed += OnMove;
         input.Player.Move.canceled += OnMove;
         input.Player.Interact.started += OnInteract;
-        triggerHandler.OnTriggerEnterHandler += HandleTriggerEnter;
-        triggerHandler.OnTriggerExitHandler += HandleTriggerExit;
-    }
-    
-    private void OnMove(InputAction.CallbackContext ctx)
-    {
-        Vector2 direction = ctx.ReadValue<Vector2>(); 
-        Vector3 movementDirection = new Vector3(direction.x, 0, direction.y);
-        movement.SetMovement(movementDirection);
-        movement.SetRotation(movementDirection);
-    }
 
-    private void OnInteract(InputAction.CallbackContext ctx)
-    {
-        if (pickUpper.HasPriority)
+        if (triggerHandler != null)
         {
-            pickUpper.Act();
-            return;
+            triggerHandler.OnTriggerEnterHandler += HandleTriggerEnter;
+            triggerHandler.OnTriggerExitHandler += HandleTriggerExit;
         }
-
-        if (!interactor.HasObjectsNearby())
-        {
-            if (!pickUpper.HasObjectsNearby())
-                return;
-
-            pickUpper.Act();
-            return;
-        }
-
-        if (!pickUpper.HasObjectsNearby())
-        {
-            interactor.Act();
-            return;
-        }
-
-        float nearestInteractableDistance = interactor.GetNearestObjectPosition().sqrMagnitude;
-        float nearestGrabbableDistance = pickUpper.GetNearestObjectPosition().sqrMagnitude;
-
-        if (nearestGrabbableDistance < nearestInteractableDistance)
-            pickUpper.Act();
-        else
-            interactor.Act();
     }
 
     private void OnDisable()
@@ -75,20 +37,67 @@ public class PlayerController : MonoBehaviour
         input.Disable();
         input.Player.Move.performed -= OnMove;
         input.Player.Move.canceled -= OnMove;
-        input.Player.Interact.performed -= OnInteract;
-        triggerHandler.OnTriggerEnterHandler -= HandleTriggerEnter;
-        triggerHandler.OnTriggerExitHandler -= HandleTriggerExit;
+        input.Player.Interact.started -= OnInteract;
+
+        if (triggerHandler != null)
+        {
+            triggerHandler.OnTriggerEnterHandler -= HandleTriggerEnter;
+            triggerHandler.OnTriggerExitHandler -= HandleTriggerExit;
+        }
+    }
+
+    private void OnMove(InputAction.CallbackContext ctx)
+    {
+        Vector2 direction = ctx.ReadValue<Vector2>();
+        Vector3 movementDirection = new Vector3(direction.x, 0, direction.y);
+        movement.SetMovement(movementDirection);
+        movement.SetRotation(movementDirection);
+    }
+
+    private void OnInteract(InputAction.CallbackContext ctx)
+    {
+        // Si tiene prioridad (objeto agarrado), usar PickUpper
+        if (pickUpper != null && pickUpper.HasPriority)
+        {
+            pickUpper.Act();
+            return;
+        }
+
+        // Intentar interactuar primero
+        if (interactor != null && interactor.HasObjectsNearby())
+        {
+            interactor.Act();
+            return;
+        }
+
+        // Fallback: intentar agarrar
+        if (pickUpper != null && pickUpper.HasObjectsNearby())
+        {
+            pickUpper.Act();
+            return;
+        }
+
+        Debug.LogWarning("[PlayerController] No interactive or grabbable object on facing tile");
     }
 
     private void HandleTriggerEnter(Collider other)
     {
-        interactor.TryAddObject(other);
-        pickUpper.TryAddObject(other);
+        if (interactor != null)
+            interactor.TryAddObject(other);
+        if (pickUpper != null)
+            pickUpper.TryAddObject(other);
     }
 
     private void HandleTriggerExit(Collider other)
     {
-        interactor.TryRemoveObject(other);
-        pickUpper.TryRemoveObject(other);
+        if (interactor != null)
+            interactor.TryRemoveObject(other);
+        if (pickUpper != null)
+            pickUpper.TryRemoveObject(other);
+    }
+
+    private void HandlePlayerEnteredTile(Vector2Int newTile)
+    {
+        Debug.Log($"[PlayerController] Entered tile: {newTile}");
     }
 }
