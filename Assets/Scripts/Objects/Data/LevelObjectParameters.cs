@@ -6,6 +6,7 @@ using UnityEngine;
 public class LevelObjectParameters
 {
     [Header("Movement")]
+    public float moveSpeed = 5f;
     public MovableType movableType;
     public MovementType movementType;
     public ColliderLevel colliderLevel;

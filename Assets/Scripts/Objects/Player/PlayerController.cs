@@ -10,6 +10,7 @@ public class PlayerController : LevelObject
     [SerializeField] private TriggerHandler triggerHandler;
     private InputSystemActions input;
     private PlayerModel model;
+    private MovableComponent movable;
 
     private void Awake()
     {
@@ -30,6 +31,7 @@ public class PlayerController : LevelObject
             triggerHandler.OnTriggerEnterHandler += HandleTriggerEnter;
             triggerHandler.OnTriggerExitHandler += HandleTriggerExit;
         }
+        movable = GetBehavior<MovableComponent>();
     }
 
     private void OnDisable()
@@ -49,28 +51,39 @@ public class PlayerController : LevelObject
     private void OnMove(InputAction.CallbackContext ctx)
     {
         Vector2 direction = ctx.ReadValue<Vector2>();
-        Vector3 movementDirection = new Vector3(direction.x, 0, direction.y);
-        movement.SetMovement(movementDirection);
-        movement.SetRotation(movementDirection);
+        if (direction == Vector2.zero) return;
+
+        Tile originTile = movable.GetCurrentTile();
+        Vector2Int targetGridPos = originTile.GridPosition + Vector2Int.RoundToInt(direction);
+        Tile targetTile = map.GetTile(targetGridPos);
+
+        MovementData data = new MovementData(this, originTile, targetTile, TileLayer.OBJECT);
+
+        if (movable.CanMove(data))
+        {
+            movable.Move(data);
+
+            if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+                Orientation = direction.x > 0 ? Direction.EAST : Direction.WEST;
+            else
+                Orientation = direction.y > 0 ? Direction.NORTH : Direction.SOUTH;
+        }
     }
 
     private void OnInteract(InputAction.CallbackContext ctx)
     {
-        // Si tiene prioridad (objeto agarrado), usar PickUpper
         if (pickUpper != null && pickUpper.HasPriority)
         {
             pickUpper.Act();
             return;
         }
 
-        // Intentar interactuar primero
         if (interactor != null && interactor.HasObjectsNearby())
         {
             interactor.Act();
             return;
         }
 
-        // Fallback: intentar agarrar
         if (pickUpper != null && pickUpper.HasObjectsNearby())
         {
             pickUpper.Act();

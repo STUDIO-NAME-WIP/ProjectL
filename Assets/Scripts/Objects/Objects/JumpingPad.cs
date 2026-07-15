@@ -8,10 +8,11 @@ public class JumpingPad : LevelObject
 
         var actComponent = GetBehavior<ActivableComponent>();
         var stateComponent = GetBehavior<StateComponent>();
+        var lightComponent = GetBehavior<LightEmmiterComponent>();
 
         actComponent.Activate += MoveObject;
-        stateComponent.OnTurnOff += () => isEnabled = false;
-        stateComponent.OnTurnOn += () => isEnabled = true;
+        stateComponent.OnTurnOff += () => lightComponent.enabled = false;
+        stateComponent.OnTurnOn += () => lightComponent.enabled = true;
     }
 
     private void MoveObject(ActivationData data)

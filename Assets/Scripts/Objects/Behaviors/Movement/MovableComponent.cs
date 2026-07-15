@@ -8,17 +8,28 @@ public class MovableComponent : MonoBehaviour, IObjectBehavior
 
     public void Configure(LevelObjectParameters data)
     {
-        movableBehavior = data.movableType == MovableType.IMMOVABLE ? new ImmovableBehavior() : new MovableBehavior();
+        switch (data.movableType)
+        {
+            case MovableType.IMMOVABLE:
+                movableBehavior = new ImmovableBehavior();
+                break;
+            case MovableType.TILE_RESTRICTED:
+                movableBehavior = new TileRestrictedMovementBehavior(data.moveSpeed);
+                break;
+            case MovableType.CONTINUOUS:
+                movableBehavior = new ContinuosMovementBehavior(data.moveSpeed);
+                break;
+        }
     }
 
-    public bool CanMove(MovementData data)
-    {
-        return movableBehavior.CanMove(data);
-    }
+    public bool CanMove(MovementData data) => movableBehavior.CanMove(data);
 
     public void Move(MovementData data)
     {
+        currentTile?.RemoveObject(layer);
+        data.targetTile.TryPlaceObject(layer, data.obj);
         movableBehavior.Move(data);
+        currentTile = data.targetTile;
     }
 
     public void SetCurrentTile(Tile tile, TileLayer layer)
@@ -26,12 +37,15 @@ public class MovableComponent : MonoBehaviour, IObjectBehavior
         currentTile = tile;
         this.layer = layer;
     }
+
+    public Tile GetCurrentTile() => currentTile;
 }
 
 public enum MovableType
 {
     IMMOVABLE,
-    MOVABLE
+    TILE_RESTRICTED,
+    CONTINUOUS
 }
 
 public enum MovementType

@@ -1346,7 +1346,7 @@ MonoBehaviour:
     prefab: {fileID: 8490102617108303864, guid: be84b2d54e85d4e4bb739ca8f77a8ec5, type: 3}
     gridPosition: {x: 3, y: 4}
     layer: 3
-    orientation: 3
+    orientation: 2
     parameters:
       movableType: 0
       movementType: 1

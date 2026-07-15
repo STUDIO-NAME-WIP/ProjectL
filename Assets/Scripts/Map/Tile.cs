@@ -8,6 +8,8 @@ public class Tile
     public Vector3 WorldPosition { get; private set; }
 
     public event Action<Tile, bool> OnIlluminationChanged;
+    public event Action<LevelObject, TileLayer> OnObjectEnter;
+    public event Action<LevelObject, TileLayer> OnObjectExit;
 
     public bool IsIlluminated => lightEmitters.Count > 0;
 
@@ -28,6 +30,7 @@ public class Tile
 
         contents[layer] = obj;
         obj.PlaceOnTile(this);
+        OnObjectEnter?.Invoke(obj, layer);
         return true;
     }
 
@@ -38,6 +41,7 @@ public class Tile
         var obj = contents[layer];
         contents.Remove(layer);
         obj.RemoveFromTile(this);
+        OnObjectExit?.Invoke(obj, layer);
         return true;
     }
 

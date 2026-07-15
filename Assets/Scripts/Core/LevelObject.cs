@@ -48,9 +48,16 @@ public class LevelObject : MonoBehaviour, ITileContent
         behaviors.Add(typeof(StateComponent), GetComponent<StateComponent>());
         behaviors.Add(typeof(ActivableComponent), GetComponent<ActivableComponent>());
 
+        ConfigureParameters(data.parameters);
+
+        GetBehavior<MovableComponent>().SetCurrentTile(map.GetTile(data.gridPosition), data.layer);
+    }
+
+    public void ConfigureParameters(LevelObjectParameters parameters)
+    {
         foreach (var behavior in behaviors.Values)
         {
-            behavior.Configure(data.parameters);
+            behavior.Configure(parameters);
         }
     }
 

@@ -380,8 +380,11 @@ public class LevelEditorWindow : EditorWindow
             EditorGUILayout.LabelField("Movimiento", EditorStyles.boldLabel);
             selectedObject.parameters.colliderLevel = (ColliderLevel)EditorGUILayout.EnumPopup("Nivel de colisión", selectedObject.parameters.colliderLevel);
             selectedObject.parameters.movableType = (MovableType)EditorGUILayout.EnumPopup("Movimiento", selectedObject.parameters.movableType);
-            if (selectedObject.parameters.movableType == MovableType.MOVABLE)
+            if (selectedObject.parameters.movableType != MovableType.IMMOVABLE)
+            {
                 selectedObject.parameters.movementType = (MovementType)EditorGUILayout.EnumPopup("Nivel de movimiento", selectedObject.parameters.movementType);
+                selectedObject.parameters.moveSpeed = EditorGUILayout.FloatField("Velocidad de movimiento", selectedObject.parameters.moveSpeed);
+            }
             GUILayout.Space(5);
 
             EditorGUILayout.LabelField("Comportamiento de luz", EditorStyles.boldLabel);

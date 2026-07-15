@@ -277,7 +277,7 @@ GameObject:
   - component: {fileID: 6776926211008262288}
   - component: {fileID: 1330542680297911219}
   - component: {fileID: 1460674114831782838}
-  - component: {fileID: 8771054386837423441}
+  - component: {fileID: 3311838307641210486}
   m_Layer: 0
   m_Name: Reflector
   m_TagString: Untagged
@@ -385,7 +385,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35dbd556765271541bdf8e71515d0d6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActivableComponent
---- !u!114 &8771054386837423441
+--- !u!114 &3311838307641210486
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -394,6 +394,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 8490102617108303864}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b922b3926e1c8634eb8bb28ed8a21dcd, type: 3}
+  m_Script: {fileID: 11500000, guid: a272a3097e0d86246af7be2da9792f25, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LevelObject
+  m_EditorClassIdentifier: Assembly-CSharp::Reflector
