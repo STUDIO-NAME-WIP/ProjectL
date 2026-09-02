@@ -9,10 +9,17 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4202171110867288903}
-  - component: {fileID: 1559329245345653086}
   - component: {fileID: 7941523347795226258}
   - component: {fileID: 2534388068919287791}
   - component: {fileID: 1959980012070254629}
+  - component: {fileID: 6168573852281011160}
+  - component: {fileID: 2401056889947889237}
+  - component: {fileID: 4148385267646714689}
+  - component: {fileID: 1962167401156298619}
+  - component: {fileID: 3160270601431138426}
+  - component: {fileID: 2590051396745624027}
+  - component: {fileID: 6573199202119035296}
+  - component: {fileID: 3182040186253096741}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -37,21 +44,6 @@ Transform:
   - {fileID: 959409959031231193}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1559329245345653086
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 228935933032774769}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a9e0da6293134612bd16a8f30546e40, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Movement
-  rigidbody: {fileID: 6957497826671635026}
-  movementSpeed: 10
-  rotationSpeed: 7
 --- !u!114 &7941523347795226258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64,13 +56,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 638a50464e35448e78f49585b3f20613, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  movement: {fileID: 1559329245345653086}
   interactor: {fileID: 2534388068919287791}
   pickUpper: {fileID: 1959980012070254629}
   collisionHandler: {fileID: 3957543794183413249}
   triggerHandler: {fileID: 7828175021382071880}
-  tileTracker: {fileID: 0}
-  lightSystem: {fileID: 0}
 --- !u!114 &2534388068919287791
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -84,7 +73,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactor
   gridMap: {fileID: 0}
-  playerTileTracker: {fileID: 0}
   playerTransform: {fileID: 4202171110867288903}
 --- !u!114 &1959980012070254629
 MonoBehaviour:
@@ -99,10 +87,103 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickUpper
   gridMap: {fileID: 0}
-  playerTileTracker: {fileID: 0}
-  gridMovementSystem: {fileID: 0}
-  lightSystem: {fileID: 0}
   playerTransform: {fileID: 4202171110867288903}
+--- !u!114 &6168573852281011160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 228935933032774769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7ab43be54e49684f9f918b9a09bb121, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MovableComponent
+--- !u!114 &2401056889947889237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 228935933032774769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d5e339b66af0ab4b9adb8563667aa45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableComponent
+--- !u!114 &4148385267646714689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 228935933032774769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e442408ca9bbd8047bae7453bc376ff7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightEmmiterComponent
+--- !u!114 &1962167401156298619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 228935933032774769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8150d2e703bddbf44935f66765954942, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBlockerComponent
+--- !u!114 &3160270601431138426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 228935933032774769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1084b19f3bce381449c7756575a74276, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ColliderComponent
+--- !u!114 &2590051396745624027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 228935933032774769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb0e829238d1afb4ca93542f241646fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StateComponent
+--- !u!114 &6573199202119035296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 228935933032774769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35dbd556765271541bdf8e71515d0d6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ActivableComponent
+--- !u!114 &3182040186253096741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 228935933032774769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0804ec6c150fe3e42821fcbd073fcc4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerView
 --- !u!1 &4513577929544437866
 GameObject:
   m_ObjectHideFlags: 0
@@ -163,7 +244,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!114 &3957543794183413249
 MonoBehaviour:

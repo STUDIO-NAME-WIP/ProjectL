@@ -1,16 +1,22 @@
+using UnityEngine;
+
 public struct MovementData
 {
-    public LevelObject obj;
-    public Tile originTile;
-    public Tile targetTile;
-    public TileLayer layer;
+    public LevelObject Object { get; }
+    public Tile OriginTile { get; }
+    public Tile TargetTile { get; }
+    public Vector3 TargetWorldPosition { get; }
+    public bool ChangesTile => OriginTile != TargetTile;
 
-    public MovementData(LevelObject obj, Tile originTile, Tile targetTile, TileLayer layer)
+    public MovementData(
+        LevelObject obj,
+        Tile originTile,
+        Tile targetTile,
+        Vector3 targetWorldPosition)
     {
-        this.obj = obj;
-        this.originTile = originTile;
-        this.targetTile = targetTile;
-        this.layer = layer;
-
+        Object = obj;
+        OriginTile = originTile;
+        TargetTile = targetTile;
+        TargetWorldPosition = targetWorldPosition;
     }
 }

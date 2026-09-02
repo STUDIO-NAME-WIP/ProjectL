@@ -2,32 +2,30 @@ using UnityEngine;
 
 public class ColliderComponent : MonoBehaviour, IObjectBehavior
 {
-
     private IColliderBehavior colliderBehavior;
+
     public void Configure(LevelObjectParameters data)
     {
-        switch (data.colliderLevel)
+        colliderBehavior = data.colliderLevel switch
         {
-            case ColliderLevel.LOW:
-                colliderBehavior = new LowColliderBehavior();
-                break;
-            case ColliderLevel.BASE:
-                colliderBehavior = new BaseColliderBehavior();
-                break;
-            case ColliderLevel.HIGH:
-                colliderBehavior = new HighColliderBehavior();
-                break;
-        }
+            ColliderLevel.NONE => new NoColliderBehavior(),
+            ColliderLevel.LOW => new LowColliderBehavior(),
+            ColliderLevel.BASE => new BaseColliderBehavior(),
+            ColliderLevel.HIGH => new HighColliderBehavior(),
+            _ => new NoColliderBehavior()
+        };
     }
 
-    public bool CanCollide(MovementType type)
+    public bool Blocks(MovementType movementType)
     {
-        return colliderBehavior != null && colliderBehavior.CanCollide(type);
+        return colliderBehavior != null &&
+               colliderBehavior.Blocks(movementType);
     }
 }
 
 public enum ColliderLevel
 {
+    NONE,
     LOW,
     BASE,
     HIGH

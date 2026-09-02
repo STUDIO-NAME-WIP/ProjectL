@@ -1,7 +1,7 @@
 public class LowColliderBehavior : IColliderBehavior
 {
-    public bool CanCollide(MovementType type)
+    public bool Blocks(MovementType type)
     {
-        throw new System.NotImplementedException();
+        return type == MovementType.SWIMMING;
     }
 }

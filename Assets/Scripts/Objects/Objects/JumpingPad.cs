@@ -21,14 +21,7 @@ public class JumpingPad : LevelObject
 
         var objectIntile = data.tile.GetObject(TileLayer.OBJECT);
         if (!objectIntile) return;
-        MovementData movData = new MovementData
-        {
-            obj = objectIntile,
-            originTile = data.tile
-        };
 
         var movComponent = objectIntile.GetBehavior<MovableComponent>();
-
-        if (movComponent.CanMove(movData)) movComponent.Move(movData);
     }
 }

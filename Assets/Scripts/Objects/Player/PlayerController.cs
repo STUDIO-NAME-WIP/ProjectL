@@ -3,25 +3,27 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : LevelObject
 {
-    [SerializeField] private Movement movement;
     [SerializeField] private Interactor interactor;
     [SerializeField] private PickUpper pickUpper;
     [SerializeField] private CollisionHandler collisionHandler;
     [SerializeField] private TriggerHandler triggerHandler;
     private InputSystemActions input;
     private PlayerModel model;
-    private MovableComponent movable;
+    private PlayerView view;
+    private Vector2 movementInput;
 
     private void Awake()
     {
-        model = new PlayerModel(movement, null);
+        view = GetComponent<PlayerView>();
         input = new InputSystemActions();
     }
 
     public override void Initialize(LevelObjectData data, GridMap gridMap)
     {
         base.Initialize(data, gridMap);
-        input.Enable();
+
+        model = new PlayerModel(this, null);
+        input.Player.Move.started += OnMove;
         input.Player.Move.performed += OnMove;
         input.Player.Move.canceled += OnMove;
         input.Player.Interact.started += OnInteract;
@@ -31,12 +33,14 @@ public class PlayerController : LevelObject
             triggerHandler.OnTriggerEnterHandler += HandleTriggerEnter;
             triggerHandler.OnTriggerExitHandler += HandleTriggerExit;
         }
-        movable = GetBehavior<MovableComponent>();
+
+        input.Enable();
     }
 
     private void OnDisable()
     {
         input.Disable();
+        input.Player.Move.started -= OnMove;
         input.Player.Move.performed -= OnMove;
         input.Player.Move.canceled -= OnMove;
         input.Player.Interact.started -= OnInteract;
@@ -50,24 +54,13 @@ public class PlayerController : LevelObject
 
     private void OnMove(InputAction.CallbackContext ctx)
     {
-        Vector2 direction = ctx.ReadValue<Vector2>();
-        if (direction == Vector2.zero) return;
+        movementInput = ctx.ReadValue<Vector2>();
+    }
 
-        Tile originTile = movable.GetCurrentTile();
-        Vector2Int targetGridPos = originTile.GridPosition + Vector2Int.RoundToInt(direction);
-        Tile targetTile = map.GetTile(targetGridPos);
-
-        MovementData data = new MovementData(this, originTile, targetTile, TileLayer.OBJECT);
-
-        if (movable.CanMove(data))
-        {
-            movable.Move(data);
-
-            if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
-                Orientation = direction.x > 0 ? Direction.EAST : Direction.WEST;
-            else
-                Orientation = direction.y > 0 ? Direction.NORTH : Direction.SOUTH;
-        }
+    private void Update()
+    {
+        if (model != null && movementInput.sqrMagnitude > 0.0001f)
+            model.TryMove(movementInput);
     }
 
     private void OnInteract(InputAction.CallbackContext ctx)

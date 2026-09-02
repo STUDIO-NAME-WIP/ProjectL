@@ -12,7 +12,7 @@ using UnityEngine;
 public class LevelObject : MonoBehaviour, ITileContent
 {
     public string ObjectId { get; protected set; }
-    public Vector2Int GridPosition { get; set; }
+    public Vector2Int GridPosition { get; protected set; }
     public TileLayer Layer { get; protected set; }
     public Direction Orientation { get; protected set; }
 
@@ -21,12 +21,15 @@ public class LevelObject : MonoBehaviour, ITileContent
 
     protected Tile currentTile;
     protected LevelObjectData data;
-    protected Dictionary<Type, IObjectBehavior> behaviors = new Dictionary<Type, IObjectBehavior>();
+    protected Dictionary<Type, IObjectBehavior> behaviors = new();
     protected GridMap map;
 
     public Tile CurrentTile => currentTile;
+    public GridMap Map => map;
 
-    public virtual void Initialize(LevelObjectData objectData, GridMap gridMap)
+    public virtual void Initialize(
+        LevelObjectData objectData,
+        GridMap gridMap)
     {
         data = objectData;
         ObjectId = objectData.objectId;
@@ -39,7 +42,7 @@ public class LevelObject : MonoBehaviour, ITileContent
     }
 
     protected virtual void InitializeBehaviors()
-    { 
+    {
         behaviors.Add(typeof(MovableComponent), GetComponent<MovableComponent>());
         behaviors.Add(typeof(InteractableComponent), GetComponent<InteractableComponent>());
         behaviors.Add(typeof(LightEmmiterComponent), GetComponent<LightEmmiterComponent>());
@@ -49,11 +52,10 @@ public class LevelObject : MonoBehaviour, ITileContent
         behaviors.Add(typeof(ActivableComponent), GetComponent<ActivableComponent>());
 
         ConfigureParameters(data.parameters);
-
-        GetBehavior<MovableComponent>().SetCurrentTile(map.GetTile(data.gridPosition), data.layer);
     }
 
-    public void ConfigureParameters(LevelObjectParameters parameters)
+    public void ConfigureParameters(
+        LevelObjectParameters parameters)
     {
         foreach (var behavior in behaviors.Values)
         {
@@ -67,6 +69,7 @@ public class LevelObject : MonoBehaviour, ITileContent
         {
             return (T)behavior;
         }
+
         return default;
     }
 
@@ -79,54 +82,22 @@ public class LevelObject : MonoBehaviour, ITileContent
     public virtual void PlaceOnTile(Tile tile)
     {
         currentTile = tile;
+
+        if (tile != null)
+        {
+            GridPosition = tile.GridPosition;
+        }
+
         OnPlaceOnTile?.Invoke();
     }
 
     public virtual void RemoveFromTile(Tile tile)
     {
+        if (currentTile != tile)
+            return;
+
         currentTile = null;
+
         OnRemoveFromTile?.Invoke();
-    }
-}
-
-public enum Direction
-{
-    NORTH, EAST, SOUTH, WEST
-}
-
-public static class DirectionExtensions
-{
-    public static Vector2Int ToVector2Int(this Direction dir)
-    {
-        return dir switch
-        {
-            Direction.NORTH => new Vector2Int(0, 1),
-            Direction.EAST => new Vector2Int(1, 0),
-            Direction.SOUTH => new Vector2Int(0, -1),
-            Direction.WEST => new Vector2Int(-1, 0),
-            _ => Vector2Int.zero,
-        };
-    }
-
-    public static Quaternion ToRotation(this Direction dir)
-    {
-        return dir switch
-        {
-            Direction.NORTH => Quaternion.Euler(0, 0, 0),
-            Direction.EAST => Quaternion.Euler(0, 90, 0),
-            Direction.SOUTH => Quaternion.Euler(0, 180, 0),
-            Direction.WEST => Quaternion.Euler(0, 270, 0),
-            _ => Quaternion.identity,
-        };
-    }
-
-    public static Direction RotateClockwise(this Direction dir)
-    {
-        return (Direction)(((int)dir + 1) % 4);
-    }
-
-    public static Direction RotateCounterClockwise(this Direction dir)
-    {
-        return (Direction)(((int)dir + 3) % 4);
     }
 }
