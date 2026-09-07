@@ -8,10 +8,9 @@ public class JumpingPad : LevelObject
 
         var actComponent = GetBehavior<ActivableComponent>();
         var stateComponent = GetBehavior<StateComponent>();
+        var lightComponent = GetBehavior<LightEmmiterComponent>();
 
         actComponent.Activate += MoveObject;
-        stateComponent.OnTurnOff += () => isEnabled = false;
-        stateComponent.OnTurnOn += () => isEnabled = true;
     }
 
     private void MoveObject(ActivationData data)
@@ -20,14 +19,7 @@ public class JumpingPad : LevelObject
 
         var objectIntile = data.tile.GetObject(TileLayer.OBJECT);
         if (!objectIntile) return;
-        MovementData movData = new MovementData
-        {
-            obj = objectIntile,
-            originTile = data.tile
-        };
 
         var movComponent = objectIntile.GetBehavior<MovableComponent>();
-
-        if (movComponent.CanMove(movData)) movComponent.Move(movData);
     }
 }

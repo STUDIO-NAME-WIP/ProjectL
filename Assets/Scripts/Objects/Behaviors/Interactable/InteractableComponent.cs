@@ -1,8 +1,9 @@
+using System;
 using UnityEngine;
 
-public class InteractableComponent : MonoBehaviour, IObjectBehavior
+public class InteractableComponent : IObjectBehavior
 {
-    private IInteractableBehavior interactableBehavior;
+    public IInteractableBehavior interactableBehavior;
 
     public void Configure(LevelObjectParameters data)
     {
@@ -24,6 +25,14 @@ public class InteractableComponent : MonoBehaviour, IObjectBehavior
     public void Interact(InteractionData interactionData)
     {
         interactableBehavior.PerformInteraction(interactionData);
+    }
+
+    public void SetupAction(Action<InteractionData> action)
+    {
+        if (interactableBehavior is InteractInteractionBehavior actionBehavior)
+        {
+            (interactableBehavior as InteractInteractionBehavior).OnInteract += action;
+        }
     }
 }
 
