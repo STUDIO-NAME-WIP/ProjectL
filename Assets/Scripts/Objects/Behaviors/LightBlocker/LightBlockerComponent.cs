@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class LightBlockerComponent : MonoBehaviour, IObjectBehavior
+public class LightBlockerComponent : IObjectBehavior
 {
     private ILightBlocker behavior;
 

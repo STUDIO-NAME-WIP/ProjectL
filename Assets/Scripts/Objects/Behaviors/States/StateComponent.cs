@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class StateComponent : MonoBehaviour, IObjectBehavior
+public class StateComponent : IObjectBehavior
 {
     private bool isActive;
     private bool currentState;

@@ -3,24 +3,27 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : LevelObject
 {
-    [SerializeField] private Movement movement;
     [SerializeField] private Interactor interactor;
     [SerializeField] private PickUpper pickUpper;
     [SerializeField] private CollisionHandler collisionHandler;
     [SerializeField] private TriggerHandler triggerHandler;
     private InputSystemActions input;
     private PlayerModel model;
+    private PlayerView view;
+    private Vector2 movementInput;
 
     private void Awake()
     {
-        model = new PlayerModel(movement, null);
+        view = GetComponent<PlayerView>();
         input = new InputSystemActions();
     }
 
     public override void Initialize(LevelObjectData data, GridMap gridMap)
     {
         base.Initialize(data, gridMap);
-        input.Enable();
+
+        model = new PlayerModel(this, null);
+        input.Player.Move.started += OnMove;
         input.Player.Move.performed += OnMove;
         input.Player.Move.canceled += OnMove;
         input.Player.Interact.started += OnInteract;
@@ -30,11 +33,14 @@ public class PlayerController : LevelObject
             triggerHandler.OnTriggerEnterHandler += HandleTriggerEnter;
             triggerHandler.OnTriggerExitHandler += HandleTriggerExit;
         }
+
+        input.Enable();
     }
 
     private void OnDisable()
     {
         input.Disable();
+        input.Player.Move.started -= OnMove;
         input.Player.Move.performed -= OnMove;
         input.Player.Move.canceled -= OnMove;
         input.Player.Interact.started -= OnInteract;
@@ -48,29 +54,29 @@ public class PlayerController : LevelObject
 
     private void OnMove(InputAction.CallbackContext ctx)
     {
-        Vector2 direction = ctx.ReadValue<Vector2>();
-        Vector3 movementDirection = new Vector3(direction.x, 0, direction.y);
-        movement.SetMovement(movementDirection);
-        movement.SetRotation(movementDirection);
+        movementInput = ctx.ReadValue<Vector2>();
+    }
+
+    private void Update()
+    {
+        if (model != null && movementInput.sqrMagnitude > 0.0001f)
+            model.TryMove(movementInput);
     }
 
     private void OnInteract(InputAction.CallbackContext ctx)
     {
-        // Si tiene prioridad (objeto agarrado), usar PickUpper
         if (pickUpper != null && pickUpper.HasPriority)
         {
             pickUpper.Act();
             return;
         }
 
-        // Intentar interactuar primero
         if (interactor != null && interactor.HasObjectsNearby())
         {
             interactor.Act();
             return;
         }
 
-        // Fallback: intentar agarrar
         if (pickUpper != null && pickUpper.HasObjectsNearby())
         {
             pickUpper.Act();

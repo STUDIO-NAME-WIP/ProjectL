@@ -1,7 +1,6 @@
 using System;
-using UnityEngine;
 
-public class ActivableComponent : MonoBehaviour, IObjectBehavior
+public class ActivableComponent : IObjectBehavior
 {
     public Action<ActivationData> Activate;
     private IActivationBehavior activationBehavior;

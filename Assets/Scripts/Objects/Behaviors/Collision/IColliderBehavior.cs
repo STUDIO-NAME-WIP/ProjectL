@@ -1,4 +1,4 @@
 public interface IColliderBehavior
 {
-    bool CanCollide(MovementType type);
+    bool Blocks(MovementType type);
 }

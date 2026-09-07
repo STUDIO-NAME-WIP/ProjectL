@@ -12,6 +12,8 @@ public class GridMap : MonoBehaviour
     private Vector3 origin;
     private List<LevelObject> objects;
 
+    private MovementResolver movementResolver;
+
     [SerializeField]
     private LevelData levelData;
 
@@ -27,6 +29,7 @@ public class GridMap : MonoBehaviour
         tileSize = levelData.tileSize;
         origin = levelData.origin;
         tiles = new Tile[width, height];
+        movementResolver = new MovementResolver(this);
         objects = new List<LevelObject>(); 
 
         for (int x = 0; x < width; x++)
@@ -45,12 +48,35 @@ public class GridMap : MonoBehaviour
         foreach (var objData in sortedObjects)
         {
             var instance = Instantiate(objData.prefab, GridToWorld(objData.gridPosition), objData.orientation.ToRotation());
-            instance.name = $"{objData.objectId}";
+            instance.name = objData.objectId;
             var levelObj = instance.GetComponent<LevelObject>();
+
+            if (levelObj == null)
+            {
+                Debug.LogError($"Prefab '{objData.prefab.name}' does not contain a LevelObject component.");
+
+                Destroy(instance);
+                continue;
+            }
+
             levelObj.Initialize(objData, this);
+
+            var tile = GetTile(levelObj.GridPosition);
+            if (tile == null)
+            {
+                Debug.LogError($"Object '{objData.objectId}' has invalid grid position {objData.gridPosition}.");
+                Destroy(instance);
+                continue;
+            }
+
+            if (!tile.TryPlaceObject(objData.layer, levelObj))
+            {
+                Debug.LogError($"Could not place object '{objData.objectId}' on tile {objData.gridPosition}, layer {objData.layer}.");
+                Destroy(instance);
+                continue;
+            }
+
             objects.Add(levelObj);
-            var tile = GetTile(objData.gridPosition);
-            tile.TryPlaceObject(objData.layer, levelObj);
         }
 
         RefreshObjects();
@@ -66,11 +92,11 @@ public class GridMap : MonoBehaviour
         foreach (var obj in objects)
         {
             var emitter = obj.GetBehavior<LightEmmiterComponent>();
-            if (emitter != null)
-            {
-                emitter.RemoveIllumination(obj.CurrentTile, this, obj.Orientation);
-                emitter.ApplyIllumination(obj.CurrentTile, this, obj.Orientation);
-            }
+
+            if (emitter == null || obj.CurrentTile == null) continue;
+
+            emitter.RemoveIllumination(obj.CurrentTile, this, obj.Orientation);
+            emitter.ApplyIllumination(obj.CurrentTile, this, obj.Orientation);
         }
     }
 
@@ -78,6 +104,16 @@ public class GridMap : MonoBehaviour
     {
         if (!IsValidPosition(gridPosition)) return null;
         return tiles[gridPosition.x, gridPosition.y];
+    }
+
+    public bool TryMoveToAdjacentTile(LevelObject obj, Direction direction)
+    {
+        return movementResolver != null && movementResolver.TryMoveToAdjacentTile(obj, direction);
+    }
+
+    public bool TryMoveContinuously(LevelObject obj, Vector3 targetWorldPosition)
+    {
+        return movementResolver != null && movementResolver.TryMoveContinuously(obj, targetWorldPosition);
     }
 
     public bool IsValidPosition(Vector2Int gridPosition)
