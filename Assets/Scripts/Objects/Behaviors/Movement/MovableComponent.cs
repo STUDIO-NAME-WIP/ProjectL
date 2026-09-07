@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MovableComponent : MonoBehaviour, IObjectBehavior
+public class MovableComponent : IObjectBehavior
 {
     private IMovableBehavior movableBehavior;
 

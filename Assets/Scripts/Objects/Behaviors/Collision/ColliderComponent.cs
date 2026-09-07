@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ColliderComponent : MonoBehaviour, IObjectBehavior
+public class ColliderComponent : IObjectBehavior
 {
     private IColliderBehavior colliderBehavior;
 

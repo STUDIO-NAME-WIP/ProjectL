@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class LightEmmiterComponent : MonoBehaviour, IObjectBehavior
+public class LightEmmiterComponent : IObjectBehavior
 {
     private ILightEmitterBehavior emitter;
     private int range;

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class InteractableComponent : MonoBehaviour, IObjectBehavior
+public class InteractableComponent : IObjectBehavior
 {
     public IInteractableBehavior interactableBehavior;
 

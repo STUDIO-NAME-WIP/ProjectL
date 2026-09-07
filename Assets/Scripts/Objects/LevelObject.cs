@@ -2,13 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(MovableComponent))]
-[RequireComponent(typeof(InteractableComponent))]
-[RequireComponent(typeof(LightEmmiterComponent))]
-[RequireComponent(typeof(LightBlockerComponent))]
-[RequireComponent(typeof(ColliderComponent))]
-[RequireComponent(typeof(StateComponent))]
-[RequireComponent(typeof(ActivableComponent))]
 public class LevelObject : MonoBehaviour, ITileContent
 {
     public string ObjectId { get; protected set; }
@@ -43,13 +36,13 @@ public class LevelObject : MonoBehaviour, ITileContent
 
     protected virtual void InitializeBehaviors()
     {
-        behaviors.Add(typeof(MovableComponent), GetComponent<MovableComponent>());
-        behaviors.Add(typeof(InteractableComponent), GetComponent<InteractableComponent>());
-        behaviors.Add(typeof(LightEmmiterComponent), GetComponent<LightEmmiterComponent>());
-        behaviors.Add(typeof(LightBlockerComponent), GetComponent<LightBlockerComponent>());
-        behaviors.Add(typeof(ColliderComponent), GetComponent<ColliderComponent>());
-        behaviors.Add(typeof(StateComponent), GetComponent<StateComponent>());
-        behaviors.Add(typeof(ActivableComponent), GetComponent<ActivableComponent>());
+        behaviors.Add(typeof(MovableComponent), new MovableComponent());
+        behaviors.Add(typeof(InteractableComponent), new InteractableComponent());
+        behaviors.Add(typeof(LightEmmiterComponent), new LightEmmiterComponent());
+        behaviors.Add(typeof(LightBlockerComponent), new LightBlockerComponent());
+        behaviors.Add(typeof(ColliderComponent), new ColliderComponent());
+        behaviors.Add(typeof(StateComponent), new StateComponent());
+        behaviors.Add(typeof(ActivableComponent), new ActivableComponent());
 
         ConfigureParameters(data.parameters);
     }
